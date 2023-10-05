@@ -177,13 +177,10 @@ public final class RouletteModel: ObservableObject {
 
     /// Method that manually sets the Roulette to a target angle position.
     public func stop(at angle: Angle) {
-        guard let partAtAngle = self.parts.first(where: { $0.startAngle.degrees <= angle.degrees && $0.endAngle.degrees >= angle.degrees })
-        else {
-            assertionFailure("Could not find part for angle at degrees \(angle.degrees). Make sure it's between 0 and (excluding) 360.")
-            return
-        }
-
         self.worker.stop()
+
+        let degrees = angle.degrees.truncatingRemainder(dividingBy: 360)
+        let partAtAngle = self.parts.first(where: { $0.startAngle.degrees <= degrees && $0.endAngle.degrees >= degrees })!
 
         self.state = .stop(location: partAtAngle, angle: angle)
         self.onDecide.send(partAtAngle)
