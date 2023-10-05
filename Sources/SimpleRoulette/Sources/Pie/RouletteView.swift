@@ -97,7 +97,7 @@ public struct RouletteView: View {
 
     /// Method that starts Roulette!
     ///
-    /// This method is kind of syntax suger of ``RouletteModel/start(speed:isConitnue:automaticallyStopAfter:)``.
+    /// This method is kind of syntax suger of ``RouletteModel/start(speed:isContinue:automaticallyStopAfter:)``.
     ///
     /// - Parameters:
     ///     - speed: You can set arbitrary speed with ``RouletteSpeed``
@@ -113,7 +113,7 @@ public struct RouletteView: View {
     @ViewBuilder
     public func startOnAppear(
         speed: RouletteSpeed = .random(),
-        isConitnue: Bool = false,
+        isContinue: Bool = false,
         automaticallyStopAfter: Double? = nil,
         didFinish: ((PartData) -> Void)? = nil
     ) -> some View {
@@ -122,7 +122,7 @@ public struct RouletteView: View {
                 onAppear {
                     model.start(
                         speed: speed,
-                        isConitnue: isConitnue,
+                        isContinue: isContinue,
                         automaticallyStopAfter: automaticallyStopAfter
                     )
                 }
@@ -136,7 +136,7 @@ public struct RouletteView: View {
                 onAppear {
                     model.start(
                         speed: speed,
-                        isConitnue: isConitnue,
+                        isContinue: isContinue,
                         automaticallyStopAfter: automaticallyStopAfter
                     )
                 }
@@ -152,4 +152,64 @@ public struct RouletteView: View {
     public func stop() {
         model.stop()
     }
+}
+
+#Preview {
+   struct Preview: View {
+      @State
+      var rouletteModel = RouletteModel(
+         parts: [
+            PartData(content: .label("A"), area: .flex(1)),
+            PartData(content: .label("B"), area: .flex(1)),
+            PartData(content: .label("C"), area: .flex(1)),
+            PartData(content: .label("D"), area: .flex(1)),
+            PartData(content: .label("E"), area: .flex(1)),
+            PartData(content: .label("F"), area: .flex(1)),
+            PartData(content: .label("G"), area: .flex(1)),
+            PartData(content: .label("H"), area: .flex(1)),
+            PartData(content: .label("I"), area: .flex(1)),
+            PartData(content: .label("J"), area: .flex(1)),
+            PartData(content: .label("K"), area: .flex(1)),
+            PartData(content: .label("L"), area: .flex(1)),
+            PartData(content: .label("M"), area: .flex(1)),
+            PartData(content: .label("N"), area: .flex(1)),
+            PartData(content: .label("O"), area: .flex(1)),
+            PartData(content: .label("P"), area: .flex(1)),
+            PartData(content: .label("Q"), area: .flex(1)),
+            PartData(content: .label("R"), area: .flex(1)),
+            PartData(content: .label("S"), area: .flex(1)),
+            PartData(content: .label("T"), area: .flex(1)),
+            PartData(content: .label("U"), area: .flex(1)),
+            PartData(content: .label("V"), area: .flex(1)),
+            PartData(content: .label("W"), area: .flex(1)),
+            PartData(content: .label("X"), area: .flex(1)),
+            PartData(content: .label("Y"), area: .flex(1)),
+            PartData(content: .label("Z"), area: .flex(1)),
+         ]
+      )
+
+      var body: some View {
+         Form {
+            RouletteView(model: self.rouletteModel)
+
+            Section {
+               Button("Start") {
+                  self.rouletteModel.start()
+               }
+
+               Button("Stop") {
+                  self.rouletteModel.stop()
+               }
+
+               Button("Jump to 'X'") {
+                  withAnimation {
+                     self.rouletteModel.stop(at: Angle(degrees: 359))
+                  }
+               }
+            }
+         }
+      }
+   }
+
+   return Preview()
 }

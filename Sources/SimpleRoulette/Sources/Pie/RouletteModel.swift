@@ -71,15 +71,15 @@ public final class RouletteModel: ObservableObject {
     ///     Default value is `nil` which means it will not automatically stop unless calling ``RouletteModel/stop()``
     public func start(
         speed _speed: RouletteSpeed = .random(),
-        isConitnue: Bool = false,
+        isContinue: Bool = false,
         automaticallyStopAfter: Double? = nil
     ) {
-        assert(!(isConitnue && automaticallyStopAfter != nil))
+        assert(!(isContinue && automaticallyStopAfter != nil))
         if state.isAnimating {
             return
         }
         onDecide.send(nil)
-        if case let RouletteState.pause(angle, speed) = state, isConitnue {
+        if case let RouletteState.pause(angle, speed) = state, isContinue {
             startFromCheckPoint(angle: angle, speed: speed)
         } else {
             startCompletely(speed: _speed, automaticallyStopAfter: automaticallyStopAfter)
@@ -174,7 +174,22 @@ public final class RouletteModel: ObservableObject {
             }
         }
     }
-    
+
+    /// Method that manually sets the Roulette to a target angle position.
+    public func stop(at angle: Angle) {
+        guard let partAtAngle = self.parts.first(where: { $0.startAngle.degrees <= angle.degrees && $0.endAngle.degrees >= angle.degrees })
+        else {
+            assertionFailure("Could not find part for angle at degrees \(angle.degrees). Make sure it's between 0 and (excluding) 360.")
+            return
+        }
+
+        self.worker.stop()
+
+        self.state = .stop(location: partAtAngle, angle: angle)
+        self.onDecide.send(partAtAngle)
+        self.objectWillChange.send()
+    }
+
     func update<State, V: Equatable>(to state: inout State, keypath: WritableKeyPath<State, V>, _ value: V) {
         if state[keyPath: keypath] != value {
             state[keyPath: keypath] = value
